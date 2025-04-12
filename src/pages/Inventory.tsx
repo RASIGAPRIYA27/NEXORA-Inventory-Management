@@ -201,7 +201,7 @@ const Inventory = () => {
                       <TableCell className="font-medium">{product.name}</TableCell>
                       <TableCell>{product.category}</TableCell>
                       <TableCell><span className="text-sm text-gray-500">{product.sku}</span></TableCell>
-                      <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">₹{product.price.toFixed(2)}</TableCell>
                       <TableCell className="text-right">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           product.stock < 10 
