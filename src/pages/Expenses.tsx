@@ -255,7 +255,7 @@ const Expenses = () => {
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={3}>Total</TableCell>
-                  <TableCell>${expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}</TableCell>
+                  <TableCell>₹{expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableFooter>
