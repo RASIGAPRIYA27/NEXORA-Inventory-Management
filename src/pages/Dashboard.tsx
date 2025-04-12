@@ -23,7 +23,7 @@ const data = [
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   }).format(value);
 
 const Dashboard: React.FC<DashboardProps> = () => {
