@@ -35,7 +35,7 @@ const Header = () => {
         </Button>
         <div className="ml-4 flex items-center">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium">
-            AS
+            <img src="https://i.ibb.co/2744bmCR/download.jpg" />
           </div>
           <span className="ml-2 text-sm font-medium hidden md:block">Admin</span>
         </div>
