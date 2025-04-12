@@ -195,8 +195,8 @@ const Expenses = () => {
         </Button>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
-        <Card className="lg:col-span-3">
+      <div className="grid gap-4 grid-cols-1">
+        <Card>
           <CardHeader>
             <CardTitle>Expenses Overview</CardTitle>
             <CardDescription>A summary of all your expenses.</CardDescription>
@@ -263,7 +263,7 @@ const Expenses = () => {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1">
+        <Card>
           <CardHeader>
             <CardTitle>Expenses Chart</CardTitle>
             <CardDescription>Visual representation of expenses.</CardDescription>
