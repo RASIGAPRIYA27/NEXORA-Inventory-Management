@@ -218,7 +218,7 @@ const Expenses = () => {
                     <TableCell>{expense.date}</TableCell>
                     <TableCell>{expense.category}</TableCell>
                     <TableCell>{expense.description}</TableCell>
-                    <TableCell>${expense.amount.toFixed(2)}</TableCell>
+                    <TableCell>₹{expense.amount.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
