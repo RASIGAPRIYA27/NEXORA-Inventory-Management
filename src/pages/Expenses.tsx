@@ -164,16 +164,16 @@ const Expenses = () => {
     expense.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Transform data for Recharts
-  const chartData = expenses.map(expense => ({
-    name: expense.category,
-    amount: expense.amount
-  }));
-
-  const colorStyles = {
-    light: "#005b96", // Primary blue from your palette
-    dark: "#6497b1"   // Secondary blue from your palette
-  };
+  // Transform data for Recharts - Group by category and sum amounts
+  const chartData = expenses.reduce((acc, expense) => {
+    const existingCategory = acc.find(item => item.name === expense.category);
+    if (existingCategory) {
+      existingCategory.amount += expense.amount;
+    } else {
+      acc.push({ name: expense.category, amount: expense.amount });
+    }
+    return acc;
+  }, [] as { name: string; amount: number }[]);
 
   return (
     <div>
@@ -268,25 +268,42 @@ const Expenses = () => {
             <CardTitle>Expenses Chart</CardTitle>
             <CardDescription>Visual representation of expenses.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="h-[350px]">
             <ChartContainer 
               config={{
                 expense: {
                   theme: {
-                    light: "#005b96", // Primary blue
-                    dark: "#6497b1"   // Secondary blue
+                    light: "hsl(var(--primary))",
+                    dark: "hsl(var(--primary))"
                   }
                 }
               }}
-              className="h-[300px]"
+              className="h-full w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <XAxis dataKey="name" />
+                <BarChart 
+                  data={chartData}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                >
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={70} 
+                    tick={{ fontSize: 12 }} 
+                    tickMargin={5}
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip 
+                    formatter={(value) => [`$${value}`, 'Amount']}
+                  />
                   <Legend />
-                  <Bar dataKey="amount" fill="var(--color-expense)" name="Amount" />
+                  <Bar 
+                    dataKey="amount" 
+                    fill="var(--color-expense)" 
+                    name="Amount" 
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
