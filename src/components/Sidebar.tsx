@@ -52,7 +52,7 @@ const Sidebar = () => {
         <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
           {isSidebarOpen && (
             <Link to="/" className="text-xl font-bold text-sidebar-foreground">
-              SkinTrack
+              NEXORA
             </Link>
           )}
           <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
