@@ -44,7 +44,7 @@ const sampleUsers = [
   { 
     id: 3, 
     name: "Alex", 
-    email: "alex33@example.com, 
+    email: "alex33@example.com", 
     role: "Staff", 
     avatar: "https://i.ibb.co/20cFdkBw/Images-de-Avatar-Homme-Freepik.jpg",
     active: true 
