@@ -27,7 +27,7 @@ const sampleProducts = [
   { 
     id: 1, 
     name: "Hydrating Face Cream", 
-    image: <svg xmlns="https://ibb.co/PZwcV94k" width="200" height="200" viewBox="0 0 200 200" fill="none">, 
+    image: "/placeholder.svg", 
     category: "Moisturizer", 
     price: 29.99, 
     stock: 42, 
