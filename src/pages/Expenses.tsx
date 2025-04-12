@@ -1,94 +1,47 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
-  Plus, 
-  Calendar,
-  Search,
-  Edit,
-  Trash,
-  ArrowUpDown
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import ExpenseModal from "@/components/ExpenseModal";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
+import { toast } from "@/components/ui/use-toast";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
-// Sample data for expenses
-const sampleExpenses = [
-  { 
-    id: 1, 
-    date: "2025-04-01", 
-    category: "Inventory Purchase", 
-    description: "Bulk order of face creams", 
-    amount: 2500.00 
-  },
-  { 
-    id: 2, 
-    date: "2025-04-05", 
-    category: "Marketing", 
-    description: "Instagram ad campaign", 
-    amount: 500.00 
-  },
-  { 
-    id: 3, 
-    date: "2025-04-10", 
-    category: "Utilities", 
-    description: "Electricity bill", 
-    amount: 150.00 
-  },
-  { 
-    id: 4, 
-    date: "2025-04-15", 
-    category: "Inventory Purchase", 
-    description: "New serum formulation", 
-    amount: 1800.00 
-  },
-  { 
-    id: 5, 
-    date: "2025-04-20", 
-    category: "Packaging", 
-    description: "Eco-friendly packaging materials", 
-    amount: 950.00 
-  },
-  { 
-    id: 6, 
-    date: "2025-04-22", 
-    category: "Shipping", 
-    description: "Monthly shipping service fee", 
-    amount: 330.00 
-  },
-  { 
-    id: 7, 
-    date: "2025-04-28", 
-    category: "Staff", 
-    description: "Part-time staff salary", 
-    amount: 1200.00 
-  },
-];
-
-const expensesByCategory = [
-  { category: "Inventory Purchase", amount: 4300 },
-  { category: "Marketing", amount: 500 },
-  { category: "Utilities", amount: 150 },
-  { category: "Packaging", amount: 950 },
-  { category: "Shipping", amount: 330 },
-  { category: "Staff", amount: 1200 },
-];
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export interface Expense {
   id: number;
@@ -98,211 +51,274 @@ export interface Expense {
   amount: number;
 }
 
+const mockExpenses: Expense[] = [
+  {
+    id: 1,
+    date: "2024-01-15",
+    category: "Inventory Purchase",
+    description: "Purchase of raw materials",
+    amount: 500.00,
+  },
+  {
+    id: 2,
+    date: "2024-01-20",
+    category: "Marketing",
+    description: "Facebook Ads campaign",
+    amount: 300.00,
+  },
+  {
+    id: 3,
+    date: "2024-01-25",
+    category: "Utilities",
+    description: "Electricity bill",
+    amount: 150.00,
+  },
+  {
+    id: 4,
+    date: "2024-02-01",
+    category: "Packaging",
+    description: "Boxes and tape",
+    amount: 75.00,
+  },
+  {
+    id: 5,
+    date: "2024-02-05",
+    category: "Shipping",
+    description: "Shipping fees for January",
+    amount: 200.00,
+  },
+  {
+    id: 6,
+    date: "2024-02-10",
+    category: "Staff",
+    description: "Salaries for part-time staff",
+    amount: 1200.00,
+  },
+  {
+    id: 7,
+    date: "2024-02-15",
+    category: "Rent",
+    description: "Office space rent",
+    amount: 1800.00,
+  },
+  {
+    id: 8,
+    date: "2024-02-20",
+    category: "Other",
+    description: "Miscellaneous expenses",
+    amount: 100.00,
+  },
+];
+
 const Expenses = () => {
-  const [expenses, setExpenses] = useState<Expense[]>(sampleExpenses);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [mode, setMode] = useState<"add" | "edit">("add");
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-  const filteredExpenses = expenses.filter(expense => 
-    expense.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleAddExpense = (newExpense: Omit<Expense, "id">) => {
-    const newId = Math.max(...expenses.map(e => e.id), 0) + 1;
-    setExpenses([...expenses, { ...newExpense, id: newId }]);
-    setIsAddModalOpen(false);
-  };
-
-  const handleEditExpense = (updatedExpense: Expense) => {
-    setExpenses(expenses.map(e => e.id === updatedExpense.id ? updatedExpense : e));
-    setIsEditModalOpen(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => {
+    setIsModalOpen(false);
     setSelectedExpense(null);
   };
+  const openDeleteModal = () => setIsDeleteModalOpen(true);
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setExpenseToDelete(null);
+  };
 
-  const handleDeleteExpense = () => {
-    if (selectedExpense) {
-      setExpenses(expenses.filter(e => e.id !== selectedExpense.id));
-      setIsDeleteDialogOpen(false);
-      setSelectedExpense(null);
+  const addExpense = (expense: Omit<Expense, "id">) => {
+    const newExpense: Expense = {
+      id: expenses.length > 0 ? Math.max(...expenses.map((e) => e.id)) + 1 : 1,
+      ...expense,
+    };
+    setExpenses([...expenses, newExpense]);
+    toast({
+      title: "Success!",
+      description: "Expense added successfully.",
+    });
+  };
+
+  const editExpense = (expense: Expense) => {
+    const updatedExpenses = expenses.map((e) => (e.id === expense.id ? expense : e));
+    setExpenses(updatedExpenses);
+    toast({
+      title: "Success!",
+      description: "Expense updated successfully.",
+    });
+  };
+
+  const deleteExpense = (id: number) => {
+    setExpenses(expenses.filter((e) => e.id !== id));
+    toast({
+      title: "Success!",
+      description: "Expense deleted successfully.",
+    });
+  };
+
+  const onSave = (expenseData: Expense | Omit<Expense, "id">) => {
+    if (mode === "add") {
+      addExpense(expenseData as Omit<Expense, "id">);
+    } else {
+      editExpense(expenseData as Expense);
+    }
+    closeModal();
+  };
+
+  const onDeleteConfirm = () => {
+    if (expenseToDelete) {
+      deleteExpense(expenseToDelete.id);
+      closeDeleteModal();
     }
   };
 
-  const handleEditClick = (expense: Expense) => {
-    setSelectedExpense(expense);
-    setIsEditModalOpen(true);
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    expense.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const chartData = {
+    labels: expenses.map(expense => expense.category),
+    datasets: [
+      {
+        label: 'Expense Amount',
+        data: expenses.map(expense => expense.amount),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
   };
 
-  const handleDeleteClick = (expense: Expense) => {
-    setSelectedExpense(expense);
-    setIsDeleteDialogOpen(true);
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const colorStyles = {
+    light: "hsl(var(--primary))",
+    dark: "hsl(var(--primary))"
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Expenses</h1>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Expense
+    <div>
+      <div className="mb-4 flex justify-between items-center">
+        <CardTitle className="text-2xl font-bold">Expenses</CardTitle>
+        <Input
+          type="search"
+          placeholder="Search expenses..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="max-w-md mr-4"
+        />
+        <Button onClick={() => {
+          openModal();
+          setMode("add");
+        }}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Expense
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
+        <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>Expenses by Category</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ChartContainer className="h-80" config={{ expenses: { theme: { light: "#8B5CF6" } } }}>
-              <BarChart data={expensesByCategory}>
-                <XAxis dataKey="category" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="amount" fill="var(--color-expenses)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-              <ChartTooltip />
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Expense Summary</CardTitle>
+            <CardTitle>Expenses Overview</CardTitle>
+            <CardDescription>A summary of all your expenses.</CardDescription>
           </CardHeader>
           <CardContent>
-            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <dt className="text-sm font-medium text-muted-foreground">Total Expenses</dt>
-                <dd className="mt-2 text-3xl font-semibold">${totalExpenses.toFixed(2)}</dd>
-              </div>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <dt className="text-sm font-medium text-muted-foreground">Highest Category</dt>
-                <dd className="mt-2 text-3xl font-semibold">Inventory</dd>
-              </div>
-              <div className="bg-muted/50 p-4 rounded-lg sm:col-span-2">
-                <dt className="text-sm font-medium text-muted-foreground">This Month vs Last Month</dt>
-                <dd className="mt-2 text-3xl font-semibold text-green-600">+12.5%</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                type="search"
-                placeholder="Search expenses..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" className="w-full sm:w-auto">
-              <Calendar className="mr-2 h-4 w-4" /> Filter by Date
-            </Button>
-          </div>
-
-          <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead className="text-right">
-                    <div className="flex items-center justify-end">
-                      Amount <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </TableHead>
+                  <TableHead>Amount</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredExpenses.length > 0 ? (
-                  filteredExpenses.map((expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
-                      <TableCell>{expense.category}</TableCell>
-                      <TableCell>{expense.description}</TableCell>
-                      <TableCell className="text-right font-medium">${expense.amount.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end items-center space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleEditClick(expense)}
-                          >
-                            <Edit size={16} />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDeleteClick(expense)}
-                          >
-                            <Trash size={16} />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      No expenses found.
+                {filteredExpenses.map((expense) => (
+                  <TableRow key={expense.id}>
+                    <TableCell>{expense.date}</TableCell>
+                    <TableCell>{expense.category}</TableCell>
+                    <TableCell>{expense.description}</TableCell>
+                    <TableCell>${expense.amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          openModal();
+                          setMode("edit");
+                          setSelectedExpense(expense);
+                        }}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          openDeleteModal();
+                          setExpenseToDelete(expense);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
                     </TableCell>
+                  </TableRow>
+                ))}
+                {filteredExpenses.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">No expenses found.</TableCell>
                   </TableRow>
                 )}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={3}>Total</TableCell>
+                  <TableCell>${expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Add Expense Modal */}
-      {isAddModalOpen && (
-        <ExpenseModal
-          open={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSave={handleAddExpense}
-          mode="add"
-        />
-      )}
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Expenses Chart</CardTitle>
+            <CardDescription>Visual representation of expenses.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Bar data={chartData} options={chartOptions} />
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Edit Expense Modal */}
-      {isEditModalOpen && selectedExpense && (
-        <ExpenseModal
-          open={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setSelectedExpense(null);
-          }}
-          onSave={handleEditExpense}
-          mode="edit"
-          expense={selectedExpense}
-        />
-      )}
+      <ExpenseModal
+        open={isModalOpen}
+        onClose={closeModal}
+        onSave={onSave}
+        mode={mode}
+        expense={selectedExpense}
+      />
 
-      {/* Delete Confirmation Dialog */}
-      {isDeleteDialogOpen && selectedExpense && (
-        <DeleteConfirmDialog
-          open={isDeleteDialogOpen}
-          onClose={() => {
-            setIsDeleteDialogOpen(false);
-            setSelectedExpense(null);
-          }}
-          onConfirm={handleDeleteExpense}
-          itemName={"expense for " + selectedExpense.description}
-        />
-      )}
+      <DeleteConfirmDialog
+        open={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={onDeleteConfirm}
+        itemName={expenseToDelete?.description || "this expense"}
+      />
     </div>
   );
 };

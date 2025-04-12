@@ -1,159 +1,113 @@
+import React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, Package, Users } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, TrendingUp, AlertCircle } from "lucide-react";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+interface DashboardProps { }
 
-const Dashboard = () => {
-  // Sample data
-  const salesData = [
-    { month: "Jan", sales: 1200 },
-    { month: "Feb", sales: 900 },
-    { month: "Mar", sales: 1500 },
-    { month: "Apr", sales: 1800 },
-    { month: "May", sales: 2000 },
-    { month: "Jun", sales: 2400 },
-  ];
+const data = [
+  { name: 'Jan', revenue: 4000 },
+  { name: 'Feb', revenue: 3000 },
+  { name: 'Mar', revenue: 2000 },
+  { name: 'Apr', revenue: 2780 },
+  { name: 'May', revenue: 1890 },
+  { name: 'Jun', revenue: 2390 },
+  { name: 'Jul', revenue: 3490 },
+  { name: 'Aug', revenue: 4000 },
+  { name: 'Sep', revenue: 3000 },
+  { name: 'Oct', revenue: 2000 },
+  { name: 'Nov', revenue: 2780 },
+  { name: 'Dec', revenue: 1890 },
+];
 
-  const recentProductsData = [
-    { id: 1, name: "Hydrating Face Cream", category: "Moisturizer", stock: 42, price: 29.99 },
-    { id: 2, name: "Vitamin C Serum", category: "Serum", stock: 18, price: 39.99 },
-    { id: 3, name: "Gentle Cleansing Foam", category: "Cleanser", stock: 53, price: 19.99 },
-    { id: 4, name: "Exfoliating Scrub", category: "Exfoliant", stock: 27, price: 24.99 },
-    { id: 5, name: "Night Repair Cream", category: "Moisturizer", stock: 8, price: 49.99 },
-  ];
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value);
+
+const Dashboard: React.FC<DashboardProps> = () => {
+  const colorStyles = {
+    light: "hsl(var(--primary))",
+    dark: "hsl(var(--primary))"
+  };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="w-4 h-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Revenue
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">127</div>
-            <p className="text-xs text-muted-foreground">+2 added today</p>
+            <div className="text-2xl font-bold">$45,231.89</div>
+            <p className="text-sm text-gray-500">
+              +20.1% from last month
+            </p>
           </CardContent>
         </Card>
-        
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-            <DollarSign className="w-4 h-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              New Orders
+            </CardTitle>
+            <Package className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$12,958</div>
-            <p className="text-xs text-muted-foreground">+$1,234 this month</p>
+            <div className="text-2xl font-bold">+2350</div>
+            <p className="text-sm text-gray-500">
+              +180.1% from last month
+            </p>
           </CardContent>
         </Card>
-        
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Active Users
+            </CardTitle>
+            <Users className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$48,295</div>
-            <p className="text-xs text-muted-foreground">+9% from last month</p>
+            <div className="text-2xl font-bold">12,234</div>
+            <p className="text-sm text-gray-500">
+              +19% from last month
+            </p>
           </CardContent>
         </Card>
-        
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
-            <AlertCircle className="w-4 h-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Expenses
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">Need reordering</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Monthly Sales</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ChartContainer className="h-96" config={{ sales: { theme: { light: "#8B5CF6" } } }}>
-              <BarChart data={salesData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="sales" fill="var(--color-sales)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-              <ChartTooltip />
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Low Stock Products</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Stock</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentProductsData.filter(item => item.stock < 20).map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell className="text-right">
-                      <span className={`px-2 py-1 rounded-full text-xs ${product.stock < 10 ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>
-                        {product.stock}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">${product.price}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="text-2xl font-bold">$12,234</div>
+            <p className="text-sm text-gray-500">
+              -10% from last month
+            </p>
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Products</CardTitle>
+          <CardTitle>Revenue Statistics</CardTitle>
+          <CardDescription>Monthly revenue data and trends.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentProductsData.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell className="text-right">{product.stock}</TableCell>
-                  <TableCell className="text-right">${product.price}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis tickFormatter={formatCurrency} />
+              <Tooltip formatter={(value: number) => formatCurrency(value)} />
+              <Area type="monotone" dataKey="revenue" stroke={colorStyles.light} fill={colorStyles.dark} />
+            </AreaChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
