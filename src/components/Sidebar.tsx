@@ -46,16 +46,16 @@ const Sidebar = () => {
   return (
     <>
       <div className={cn(
-        "bg-white h-screen border-r border-gray-200 z-30 transition-all duration-300 ease-in-out",
+        "bg-sidebar h-screen border-r border-sidebar-border z-30 transition-all duration-300 ease-in-out",
         isSidebarOpen ? "w-64" : "w-0 -ml-4 md:w-16 md:ml-0"
       )}>
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
           {isSidebarOpen && (
-            <Link to="/" className="text-xl font-bold text-primary">
+            <Link to="/" className="text-xl font-bold text-sidebar-foreground">
               SkinTrack
             </Link>
           )}
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto">
+          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
         </div>
@@ -67,8 +67,8 @@ const Sidebar = () => {
               className={cn(
                 "flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
                 location.pathname === item.path
-                  ? "bg-primary text-primary-foreground"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
               )}
             >
               <item.icon size={20} className={cn("mr-3", !isSidebarOpen && "mx-auto")} />

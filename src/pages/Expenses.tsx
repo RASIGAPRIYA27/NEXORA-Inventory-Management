@@ -171,8 +171,8 @@ const Expenses = () => {
   }));
 
   const colorStyles = {
-    light: "hsl(var(--primary))",
-    dark: "hsl(var(--primary))"
+    light: "#005b96", // Primary blue from your palette
+    dark: "#6497b1"   // Secondary blue from your palette
   };
 
   return (
@@ -273,8 +273,8 @@ const Expenses = () => {
               config={{
                 expense: {
                   theme: {
-                    light: "#0ea5e9",
-                    dark: "#0ea5e9"
+                    light: "#005b96", // Primary blue
+                    dark: "#6497b1"   // Secondary blue
                   }
                 }
               }}
