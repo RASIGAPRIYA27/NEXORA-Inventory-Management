@@ -43,7 +43,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">₹45,231.89</div>
             <p className="text-sm text-gray-500">
               +20.1% from last month
             </p>
@@ -71,7 +71,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             <Users className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12,234</div>
+            <div className="text-2xl font-bold">₹12,234</div>
             <p className="text-sm text-gray-500">
               +19% from last month
             </p>
@@ -85,7 +85,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$12,234</div>
+            <div className="text-2xl font-bold">₹12,234</div>
             <p className="text-sm text-gray-500">
               -10% from last month
             </p>
