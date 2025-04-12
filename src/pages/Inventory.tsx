@@ -195,7 +195,7 @@ const Inventory = () => {
                         <img 
                           src={product.image} 
                           alt={product.name} 
-                          className="h-13 w-13 rounded-md object-cover"
+                          className="h-10 w-10 rounded-md object-cover"
                         />
                       </TableCell>
                       <TableCell className="font-medium">{product.name}</TableCell>
