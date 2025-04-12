@@ -81,6 +81,11 @@ const Sidebar = () => {
             </Link>
           ))}
         </nav>
+              {isSidebarOpen && (
+        <div className="px-4 py-2 border-t border-sidebar-border">
+          <p className="text-center text-xs">&copy;2025 NEXORA</p>
+        </div>
+      )}
       </div>
       <div 
         className={cn(
