@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -23,25 +24,8 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import ExpenseModal from "@/components/ExpenseModal";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { toast } from "@/components/ui/use-toast";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ChartContainer } from "@/components/ui/chart";
 
 export interface Expense {
   id: number;
@@ -180,26 +164,11 @@ const Expenses = () => {
     expense.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const chartData = {
-    labels: expenses.map(expense => expense.category),
-    datasets: [
-      {
-        label: 'Expense Amount',
-        data: expenses.map(expense => expense.amount),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
+  // Transform data for Recharts
+  const chartData = expenses.map(expense => ({
+    name: expense.category,
+    amount: expense.amount
+  }));
 
   const colorStyles = {
     light: "hsl(var(--primary))",
@@ -300,7 +269,27 @@ const Expenses = () => {
             <CardDescription>Visual representation of expenses.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Bar data={chartData} options={chartOptions} />
+            <ChartContainer 
+              config={{
+                expense: {
+                  theme: {
+                    light: "#0ea5e9",
+                    dark: "#0ea5e9"
+                  }
+                }
+              }}
+              className="h-[300px]"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="amount" fill="var(--color-expense)" name="Amount" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>
