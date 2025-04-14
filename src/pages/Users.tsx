@@ -27,34 +27,34 @@ import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 const sampleUsers = [
   { 
     id: 1, 
-    name: "John Doe", 
-    email: "john@example.com", 
+    name: "Rasiga Priya", 
+    email: "rasiga@example.com", 
     role: "Admin", 
-    avatar: "/placeholder.svg",
+    avatar: "https://i.ibb.co/2744bmCR/download.jpg",
     active: true 
   },
   { 
     id: 2, 
-    name: "Jane Smith", 
+    name: "Jane", 
     email: "jane@example.com", 
     role: "Manager", 
-    avatar: "/placeholder.svg",
+    avatar: "https://i.ibb.co/Kzx9Dd2N/download-1.jpg" ,
     active: true 
   },
   { 
     id: 3, 
-    name: "Alex Johnson", 
-    email: "alex@example.com", 
+    name: "Alex", 
+    email: "alex33@example.com", 
     role: "Staff", 
-    avatar: "/placeholder.svg",
+    avatar: "https://i.ibb.co/20cFdkBw/Images-de-Avatar-Homme-Freepik.jpg",
     active: true 
   },
   { 
     id: 4, 
-    name: "Sarah Williams", 
+    name: "Sarah", 
     email: "sarah@example.com", 
     role: "Staff", 
-    avatar: "/placeholder.svg",
+    avatar: "https://i.ibb.co/Kzx0YVpr/Retrato-de-una-mujer-joven-y-bella.jpg",
     active: false 
   },
   { 
@@ -62,7 +62,7 @@ const sampleUsers = [
     name: "Michael Brown", 
     email: "michael@example.com", 
     role: "Manager", 
-    avatar: "/placeholder.svg",
+    avatar: "https://i.ibb.co/whq2Kvjg/m1.jpg",
     active: true 
   },
 ];
