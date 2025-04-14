@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,7 +92,7 @@ const sampleProducts = [
 ];
 
 export interface Product {
-  id: number | string;
+  id: string | number;
   name: string;
   image: string;
   category: string;

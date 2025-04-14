@@ -17,7 +17,7 @@ export const updateProduct = async (product: Product) => {
   return response.data;
 };
 
-export const deleteProduct = async (id: number) => {
+export const deleteProduct = async (id: string | number) => {
   const response = await api.delete(`/products/${id}`);
   return response.data;
 };

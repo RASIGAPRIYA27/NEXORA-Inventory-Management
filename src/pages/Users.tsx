@@ -70,7 +70,7 @@ const sampleUsers = [
 ];
 
 export interface User {
-  id: number | string;
+  id: string | number;
   name: string;
   email: string;
   role: string;
