@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -22,8 +22,10 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import UserModal from "@/components/UserModal";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
+import { useToast } from "@/components/ui/use-toast";
+import { fetchUsers, createUser, updateUser, deleteUser } from "@/services/userService";
 
-// Sample data for users
+// Sample data for initial state
 const sampleUsers = [
   { 
     id: 1, 
@@ -68,7 +70,7 @@ const sampleUsers = [
 ];
 
 export interface User {
-  id: number;
+  id: number | string;
   name: string;
   email: string;
   role: string;
@@ -78,12 +80,36 @@ export interface User {
 }
 
 const Users = () => {
-  const [users, setUsers] = useState<User[]>(sampleUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load users. Using sample data instead.",
+        variant: "destructive",
+      });
+      setUsers(sampleUsers);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,23 +117,86 @@ const Users = () => {
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddUser = (newUser: Omit<User, "id">) => {
-    const newId = Math.max(...users.map(u => u.id), 0) + 1;
-    setUsers([...users, { ...newUser, id: newId }]);
-    setIsAddModalOpen(false);
+  const handleAddUser = async (newUser: Omit<User, "id">) => {
+    try {
+      const savedUser = await createUser(newUser);
+      setUsers([...users, savedUser]);
+      setIsAddModalOpen(false);
+      toast({
+        title: "Success",
+        description: "User added successfully",
+      });
+    } catch (error) {
+      console.error("Failed to add user:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add user",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditUser = (updatedUser: User) => {
-    setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-    setIsEditModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleDeleteUser = () => {
-    if (selectedUser) {
-      setUsers(users.filter(u => u.id !== selectedUser.id));
-      setIsDeleteDialogOpen(false);
+  const handleEditUser = async (updatedUser: User) => {
+    try {
+      const savedUser = await updateUser(updatedUser);
+      setUsers(users.map(u => u.id === savedUser.id ? savedUser : u));
+      setIsEditModalOpen(false);
       setSelectedUser(null);
+      toast({
+        title: "Success",
+        description: "User updated successfully",
+      });
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update user",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (selectedUser) {
+      try {
+        await deleteUser(selectedUser.id as number);
+        setUsers(users.filter(u => u.id !== selectedUser.id));
+        setIsDeleteDialogOpen(false);
+        setSelectedUser(null);
+        toast({
+          title: "Success",
+          description: "User deleted successfully",
+        });
+      } catch (error) {
+        console.error("Failed to delete user:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete user",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleToggleStatus = async (userId: number | string) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      const updatedUser = { ...user, active: !user.active };
+      try {
+        await updateUser(updatedUser as User);
+        setUsers(users.map(u => u.id === userId ? updatedUser : u));
+        toast({
+          title: "Success",
+          description: `User status ${updatedUser.active ? 'activated' : 'deactivated'} successfully`,
+        });
+      } catch (error) {
+        console.error("Failed to update user status:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update user status",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -119,12 +208,6 @@ const Users = () => {
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
-  };
-
-  const handleToggleStatus = (userId: number) => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, active: !user.active } : user
-    ));
   };
 
   return (
@@ -151,90 +234,94 @@ const Users = () => {
             </div>
           </div>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <img 
-                            src={user.avatar} 
-                            alt={user.name} 
-                            className="h-8 w-8 rounded-full object-cover"
-                          />
-                          <span className="font-medium">{user.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          user.role === "Admin" 
-                            ? "bg-purple-100 text-purple-800" 
-                            : user.role === "Manager" 
-                              ? "bg-blue-100 text-blue-800" 
-                              : "bg-gray-100 text-gray-800"
-                        }`}>
-                          {user.role}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className={`flex items-center ${
-                            user.active 
-                              ? "text-green-600" 
-                              : "text-gray-400"
-                          }`}
-                          onClick={() => handleToggleStatus(user.id)}
-                        >
-                          {user.active 
-                            ? <><CheckCircle className="mr-1 h-4 w-4" /> Active</> 
-                            : <><XCircle className="mr-1 h-4 w-4" /> Inactive</>
-                          }
-                        </Button>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end items-center space-x-2">
+          {loading ? (
+            <div className="text-center py-10">Loading users...</div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            <img 
+                              src={user.avatar} 
+                              alt={user.name} 
+                              className="h-8 w-8 rounded-full object-cover"
+                            />
+                            <span className="font-medium">{user.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            user.role === "Admin" 
+                              ? "bg-purple-100 text-purple-800" 
+                              : user.role === "Manager" 
+                                ? "bg-blue-100 text-blue-800" 
+                                : "bg-gray-100 text-gray-800"
+                          }`}>
+                            {user.role}
+                          </span>
+                        </TableCell>
+                        <TableCell>
                           <Button 
                             variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleEditClick(user)}
+                            size="sm"
+                            className={`flex items-center ${
+                              user.active 
+                                ? "text-green-600" 
+                                : "text-gray-400"
+                            }`}
+                            onClick={() => handleToggleStatus(user.id)}
                           >
-                            <Edit size={16} />
+                            {user.active 
+                              ? <><CheckCircle className="mr-1 h-4 w-4" /> Active</> 
+                              : <><XCircle className="mr-1 h-4 w-4" /> Inactive</>
+                            }
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDeleteClick(user)}
-                          >
-                            <Trash size={16} />
-                          </Button>
-                        </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end items-center space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleEditClick(user)}
+                            >
+                              <Edit size={16} />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleDeleteClick(user)}
+                            >
+                              <Trash size={16} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                        No users found.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      No users found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
