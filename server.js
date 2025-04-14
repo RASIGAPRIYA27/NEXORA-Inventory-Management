@@ -97,11 +97,12 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.post('/api/users', async (req, res) => {
-  const user = new User(req.body);
   try {
+    const user = new User(req.body);
     const newUser = await user.save();
     res.status(201).json(newUser);
   } catch (err) {
+    console.error("Error saving user:", err);
     res.status(400).json({ message: err.message });
   }
 });

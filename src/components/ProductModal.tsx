@@ -35,8 +35,19 @@ const ProductModal = ({ open, onClose, onSave, mode, product }: ProductModalProp
   useEffect(() => {
     if (mode === "edit" && product) {
       setFormData({ ...product });
+    } else {
+      // Reset form for add mode
+      setFormData({
+        name: "",
+        image: "/placeholder.svg",
+        category: "",
+        price: 0,
+        stock: 0,
+        sku: "",
+        description: ""
+      });
     }
-  }, [mode, product]);
+  }, [mode, product, open]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -48,6 +59,7 @@ const ProductModal = ({ open, onClose, onSave, mode, product }: ProductModalProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting product form data:', formData);
     onSave(formData);
   };
 

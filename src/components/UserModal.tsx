@@ -33,19 +33,38 @@ const UserModal = ({ open, onClose, onSave, mode, user }: UserModalProps) => {
   useEffect(() => {
     if (mode === "edit" && user) {
       setFormData({ ...user });
+    } else {
+      // Reset form for add mode
+      setFormData({
+        name: "",
+        email: "",
+        role: "Staff",
+        avatar: "/placeholder.svg",
+        active: true,
+        phone: ""
+      });
     }
-  }, [mode, user]);
+  }, [mode, user, open]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
+    
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: (e.target as HTMLInputElement).checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting user form data:', formData);
     onSave(formData);
   };
 
