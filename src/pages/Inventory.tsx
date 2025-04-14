@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -21,15 +21,13 @@ import {
 import ProductModal from "@/components/ProductModal";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { fetchProducts, createProduct, updateProduct, deleteProduct } from "@/services/productService";
 
-// Sample data for initial state
+// Sample data for inventory
 const sampleProducts = [
   { 
     id: 1, 
     name: "Hydrating Face Cream", 
-    image: "https://i.ibb.co/SXRtZd0S/p1.jpg", 
+    image: "/placeholder.svg", 
     category: "Moisturizer", 
     price: 29.99, 
     stock: 42, 
@@ -38,7 +36,7 @@ const sampleProducts = [
   { 
     id: 2, 
     name: "Vitamin C Serum", 
-    image: "https://i.ibb.co/vxvMkNn6/1-19.webp", 
+    image: "/placeholder.svg", 
     category: "Serum", 
     price: 39.99, 
     stock: 18, 
@@ -47,7 +45,7 @@ const sampleProducts = [
   { 
     id: 3, 
     name: "Gentle Cleansing Foam", 
-    image: "https://i.ibb.co/QF5Y0LYY/face-wash.webp" , 
+    image: "/placeholder.svg", 
     category: "Cleanser", 
     price: 19.99, 
     stock: 53, 
@@ -56,7 +54,7 @@ const sampleProducts = [
   { 
     id: 4, 
     name: "Exfoliating Scrub", 
-    image: "https://i.ibb.co/PGMKMSTX/scrub.webp", 
+    image: "/placeholder.svg", 
     category: "Exfoliant", 
     price: 24.99, 
     stock: 27, 
@@ -65,7 +63,7 @@ const sampleProducts = [
   { 
     id: 5, 
     name: "Night Repair Cream", 
-    image: "https://i.ibb.co/2YHGRWwB/night-gel.jpg", 
+    image: "/placeholder.svg", 
     category: "Moisturizer", 
     price: 49.99, 
     stock: 8, 
@@ -74,7 +72,7 @@ const sampleProducts = [
   { 
     id: 6, 
     name: "Hyaluronic Acid Essence", 
-    image: "https://i.ibb.co/JYC8Fgk/hyacid.jpg", 
+    image: "/placeholder.svg", 
     category: "Essence", 
     price: 34.99, 
     stock: 22, 
@@ -83,7 +81,7 @@ const sampleProducts = [
   { 
     id: 7, 
     name: "Clay Mask", 
-    image: "https://i.ibb.co/wrjkDmxZ/mask.webp", 
+    image: "/placeholder.svg", 
     category: "Mask", 
     price: 21.99, 
     stock: 31, 
@@ -92,7 +90,7 @@ const sampleProducts = [
 ];
 
 export interface Product {
-  id: string | number;
+  id: number;
   name: string;
   image: string;
   category: string;
@@ -103,36 +101,12 @@ export interface Product {
 }
 
 const Inventory = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(sampleProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    loadProducts();
-  }, []);
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchProducts();
-      setProducts(data);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load products. Using sample data instead.",
-        variant: "destructive",
-      });
-      setProducts(sampleProducts);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredProducts = products.filter(product => 
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -140,64 +114,23 @@ const Inventory = () => {
     product.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddProduct = async (newProduct: Omit<Product, "id">) => {
-    try {
-      const savedProduct = await createProduct(newProduct);
-      setProducts([...products, savedProduct]);
-      setIsAddModalOpen(false);
-      toast({
-        title: "Success",
-        description: "Product added successfully",
-      });
-    } catch (error) {
-      console.error("Failed to add product:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add product",
-        variant: "destructive",
-      });
-    }
+  const handleAddProduct = (newProduct: Omit<Product, "id">) => {
+    const newId = Math.max(...products.map(p => p.id), 0) + 1;
+    setProducts([...products, { ...newProduct, id: newId }]);
+    setIsAddModalOpen(false);
   };
 
-  const handleEditProduct = async (updatedProduct: Product) => {
-    try {
-      const savedProduct = await updateProduct(updatedProduct);
-      setProducts(products.map(p => p.id === savedProduct.id ? savedProduct : p));
-      setIsEditModalOpen(false);
-      setSelectedProduct(null);
-      toast({
-        title: "Success",
-        description: "Product updated successfully",
-      });
-    } catch (error) {
-      console.error("Failed to update product:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update product",
-        variant: "destructive",
-      });
-    }
+  const handleEditProduct = (updatedProduct: Product) => {
+    setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+    setIsEditModalOpen(false);
+    setSelectedProduct(null);
   };
 
-  const handleDeleteProduct = async () => {
+  const handleDeleteProduct = () => {
     if (selectedProduct) {
-      try {
-        await deleteProduct(selectedProduct.id as number);
-        setProducts(products.filter(p => p.id !== selectedProduct.id));
-        setIsDeleteDialogOpen(false);
-        setSelectedProduct(null);
-        toast({
-          title: "Success",
-          description: "Product deleted successfully",
-        });
-      } catch (error) {
-        console.error("Failed to delete product:", error);
-        toast({
-          title: "Error",
-          description: "Failed to delete product",
-          variant: "destructive",
-        });
-      }
+      setProducts(products.filter(p => p.id !== selectedProduct.id));
+      setIsDeleteDialogOpen(false);
+      setSelectedProduct(null);
     }
   };
 
@@ -241,79 +174,75 @@ const Inventory = () => {
             </Button>
           </div>
 
-          {loading ? (
-            <div className="text-center py-10">Loading products...</div>
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead className="text-right">Stock</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell>
-                          <img 
-                            src={product.image} 
-                            alt={product.name} 
-                            className="h-10 w-10 rounded-md object-cover"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.category}</TableCell>
-                        <TableCell><span className="text-sm text-gray-500">{product.sku}</span></TableCell>
-                        <TableCell className="text-right">₹{product.price.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            product.stock < 10 
-                              ? "bg-red-100 text-red-800" 
-                              : product.stock < 20 
-                                ? "bg-yellow-100 text-yellow-800" 
-                                : "bg-green-100 text-green-800"
-                          }`}>
-                            {product.stock}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end items-center space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleEditClick(product)}
-                            >
-                              <Edit size={16} />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleDeleteClick(product)}
-                            >
-                              <Trash size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                        No products found.
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Image</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Stock</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="h-10 w-10 rounded-md object-cover"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell><span className="text-sm text-gray-500">{product.sku}</span></TableCell>
+                      <TableCell className="text-right">₹{product.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          product.stock < 10 
+                            ? "bg-red-100 text-red-800" 
+                            : product.stock < 20 
+                              ? "bg-yellow-100 text-yellow-800" 
+                              : "bg-green-100 text-green-800"
+                        }`}>
+                          {product.stock}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end items-center space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleEditClick(product)}
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDeleteClick(product)}
+                          >
+                            <Trash size={16} />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
+                      No products found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
