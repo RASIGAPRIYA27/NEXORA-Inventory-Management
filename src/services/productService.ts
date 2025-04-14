@@ -14,7 +14,7 @@ export const fetchProducts = async () => {
   }
 };
 
-export const createProduct = async (product: Omit<Product, 'id'>) => {
+export const createProduct = async (product: Omit<Product, "id">) => {
   try {
     console.log('Creating product with data:', product);
     // Make sure all required fields are present

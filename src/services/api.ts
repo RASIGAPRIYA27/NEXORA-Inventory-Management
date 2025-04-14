@@ -10,7 +10,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   // Extend timeout to prevent hanging requests
-  timeout: 15000,
+  timeout: 30000,
 });
 
 // Request interceptor for debugging
@@ -32,9 +32,11 @@ api.interceptors.response.use(response => {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     console.error('Response Error:', error.response.status, error.response.data);
+    console.error('Request that caused error:', error.config.method, error.config.url, error.config.data);
   } else if (error.request) {
     // The request was made but no response was received
     console.error('No Response Received:', error.request);
+    console.error('Request that timed out:', error.config.method, error.config.url);
   } else {
     // Something happened in setting up the request that triggered an Error
     console.error('Request Setup Error:', error.message);

@@ -12,13 +12,17 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
+// MongoDB Connection with detailed error handling
 mongoose.connect('mongodb://localhost:27017/inventory-manager', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.error('MongoDB Connection Error:', err));
+.then(() => console.log('MongoDB Connected successfully to inventory-manager database'))
+.catch(err => {
+  console.error('MongoDB Connection Error:', err);
+  console.error('Connection string: mongodb://localhost:27017/inventory-manager');
+  console.error('Make sure MongoDB server is running and accessible');
+});
 
 // Define Schemas
 const ProductSchema = new mongoose.Schema({
@@ -41,8 +45,20 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Create models - explicitly set collection names to match your existing collections
+console.log('Creating models with explicit collection names:');
+console.log('Product -> products collection');
+console.log('User -> user collection');
 const Product = mongoose.model('Product', ProductSchema, 'products');
-const User = mongoose.model('User', UserSchema, 'user'); // Changed from 'users' to 'user' to match your collection name
+const User = mongoose.model('User', UserSchema, 'user'); // Using 'user' collection name as shown in your image
+
+// Debug the collections at startup
+mongoose.connection.once('open', async () => {
+  try {
+    console.log('Connected collections:', await mongoose.connection.db.listCollections().toArray());
+  } catch (err) {
+    console.error('Error listing collections:', err);
+  }
+});
 
 // Product routes
 app.get('/api/products', async (req, res) => {
@@ -126,6 +142,10 @@ app.post('/api/users', async (req, res) => {
     res.status(201).json(newUser);
   } catch (err) {
     console.error("Error saving user:", err);
+    if (err.code === 11000) {
+      // Handle duplicate email error
+      return res.status(400).json({ message: 'Email already exists' });
+    }
     res.status(400).json({ message: err.message });
   }
 });
