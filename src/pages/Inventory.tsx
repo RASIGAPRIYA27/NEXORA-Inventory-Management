@@ -27,7 +27,7 @@ const sampleProducts = [
   { 
     id: 1, 
     name: "Hydrating Face Cream", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/SXRtZd0S/p1.jpg", 
     category: "Moisturizer", 
     price: 29.99, 
     stock: 42, 
@@ -36,7 +36,7 @@ const sampleProducts = [
   { 
     id: 2, 
     name: "Vitamin C Serum", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/vxvMkNn6/1-19.webp", 
     category: "Serum", 
     price: 39.99, 
     stock: 18, 
@@ -45,7 +45,7 @@ const sampleProducts = [
   { 
     id: 3, 
     name: "Gentle Cleansing Foam", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/QF5Y0LYY/face-wash.webp" , 
     category: "Cleanser", 
     price: 19.99, 
     stock: 53, 
@@ -54,7 +54,7 @@ const sampleProducts = [
   { 
     id: 4, 
     name: "Exfoliating Scrub", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/PGMKMSTX/scrub.webp", 
     category: "Exfoliant", 
     price: 24.99, 
     stock: 27, 
@@ -63,7 +63,7 @@ const sampleProducts = [
   { 
     id: 5, 
     name: "Night Repair Cream", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/2YHGRWwB/night-gel.jpg", 
     category: "Moisturizer", 
     price: 49.99, 
     stock: 8, 
@@ -72,7 +72,7 @@ const sampleProducts = [
   { 
     id: 6, 
     name: "Hyaluronic Acid Essence", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/JYC8Fgk/hyacid.jpg", 
     category: "Essence", 
     price: 34.99, 
     stock: 22, 
@@ -81,7 +81,7 @@ const sampleProducts = [
   { 
     id: 7, 
     name: "Clay Mask", 
-    image: "/placeholder.svg", 
+    image: "https://i.ibb.co/wrjkDmxZ/mask.webp", 
     category: "Mask", 
     price: 21.99, 
     stock: 31, 
