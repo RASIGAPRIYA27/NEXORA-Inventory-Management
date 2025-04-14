@@ -23,7 +23,18 @@ export const createUser = async (user: Omit<User, 'id'>) => {
       throw new Error('Missing required user fields');
     }
     
-    const response = await api.post('/users', user);
+    // Remove any undefined or unwanted properties
+    const cleanUser = {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      active: user.active !== undefined ? user.active : true,
+      phone: user.phone || ''
+    };
+    
+    console.log('Sending cleaned user data:', cleanUser);
+    const response = await api.post('/users', cleanUser);
     console.log('Created user response:', response.data);
     return response.data;
   } catch (error) {
@@ -35,7 +46,17 @@ export const createUser = async (user: Omit<User, 'id'>) => {
 export const updateUser = async (user: User) => {
   try {
     console.log('Updating user:', user);
-    const response = await api.put(`/users/${user.id}`, user);
+    // Remove any undefined or unwanted properties
+    const cleanUser = {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      active: user.active !== undefined ? user.active : true,
+      phone: user.phone || ''
+    };
+    
+    const response = await api.put(`/users/${user.id}`, cleanUser);
     console.log('Updated user response:', response.data);
     return response.data;
   } catch (error) {

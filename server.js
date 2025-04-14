@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
 
 // Create models - explicitly set collection names to match your existing collections
 const Product = mongoose.model('Product', ProductSchema, 'products');
-const User = mongoose.model('User', UserSchema, 'users');
+const User = mongoose.model('User', UserSchema, 'user'); // Changed from 'users' to 'user' to match your collection name
 
 // Product routes
 app.get('/api/products', async (req, res) => {

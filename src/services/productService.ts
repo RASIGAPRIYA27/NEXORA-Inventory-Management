@@ -23,7 +23,19 @@ export const createProduct = async (product: Omit<Product, 'id'>) => {
       throw new Error('Missing required product fields');
     }
     
-    const response = await api.post('/products', product);
+    // Remove any undefined or unwanted properties
+    const cleanProduct = {
+      name: product.name,
+      image: product.image,
+      category: product.category,
+      price: product.price,
+      stock: product.stock,
+      sku: product.sku,
+      description: product.description || ''
+    };
+    
+    console.log('Sending cleaned product data:', cleanProduct);
+    const response = await api.post('/products', cleanProduct);
     console.log('Created product response:', response.data);
     return response.data;
   } catch (error) {
@@ -35,7 +47,18 @@ export const createProduct = async (product: Omit<Product, 'id'>) => {
 export const updateProduct = async (product: Product) => {
   try {
     console.log('Updating product:', product);
-    const response = await api.put(`/products/${product.id}`, product);
+    // Remove any undefined or unwanted properties
+    const cleanProduct = {
+      name: product.name,
+      image: product.image,
+      category: product.category,
+      price: product.price,
+      stock: product.stock,
+      sku: product.sku,
+      description: product.description || ''
+    };
+    
+    const response = await api.put(`/products/${product.id}`, cleanProduct);
     console.log('Updated product response:', response.data);
     return response.data;
   } catch (error) {

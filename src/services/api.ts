@@ -9,8 +9,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // Add timeout to prevent hanging requests
-  timeout: 10000,
+  // Extend timeout to prevent hanging requests
+  timeout: 15000,
 });
 
 // Request interceptor for debugging
