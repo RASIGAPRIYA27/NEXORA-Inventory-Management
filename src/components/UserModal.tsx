@@ -21,7 +21,7 @@ interface UserModalProps {
 }
 
 const UserModal = ({ open, onClose, onSave, mode, user }: UserModalProps) => {
-  const [formData, setFormData] = useState<Omit<User, "id"> & { id?: number }>({
+  const [formData, setFormData] = useState<Omit<User, "id"> & { id?: string | number }>({
     name: "",
     email: "",
     role: "Staff",

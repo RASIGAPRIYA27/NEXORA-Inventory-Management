@@ -22,7 +22,7 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ open, onClose, onSave, mode, product }: ProductModalProps) => {
-  const [formData, setFormData] = useState<Omit<Product, "id"> & { id?: number }>({
+  const [formData, setFormData] = useState<Omit<Product, "id"> & { id?: string | number }>({
     name: "",
     image: "/placeholder.svg",
     category: "",
