@@ -37,7 +37,7 @@ The **Inventory Management System** is a comprehensive solution for tracking and
 |------------------|--------------------------------|
 | **Frontend**     | React.ts                       |
 | **Backend**      | Node.js + Express.js          |
-| **Database**     | MySQL                        |
+| **Database**     | MongoDB                       |
 | **Styling**      | Tailwind CSS                 |
 
 ---
