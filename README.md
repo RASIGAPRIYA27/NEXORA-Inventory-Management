@@ -61,20 +61,21 @@ Here 🔗 : https://drive.google.com/file/d/1aTWS0RMvFS3D3aeDII4ssVwQWce18a8n/vi
 
 1. Clone the Repository
 
-git clone https://github.com/yourusername/inventory-management-system.git
-cd inventory-management-system
+'''git clone https://github.com/yourusername/inventory-management-system.git
+
+cd inventory-management-system'''
 
 2. Install Dependencies
 
 Backend
-
+'''
 cd backend
-npm install
+npm install'''
 
 Frontend
-
+'''
 cd ../frontend
-npm install
+npm install'''
 
 3. Configure Environment Variables
 Create a .env file in both backend and frontend directories.
@@ -84,14 +85,30 @@ Set up variables such as database URI and API endpoints as needed.
 4. Run the Application
 
 Start Backend
-
+'''
 cd backend
-npm run dev
+npm run dev'''
 
 Start Frontend
-
+'''
 cd ../frontend
-npm start
+npm start'''
 
 5. Access the Application
 Open your browser and navigate to: http://localhost:3000
+
+##Deployment
+You can easily deploy this project to platforms like Vercel, Netlify, or any cloud provider of your choice.
+
+Deploy to Vercel
+Sign up or log in at Vercel.
+
+Click "New Project" and import your GitHub repository.
+
+Follow the prompts to configure your frontend (React) and backend (Node.js/Express) directories.
+
+Set required environment variables (e.g., MONGODB_URI, JWT_SECRET) in the Vercel dashboard.
+
+Click "Deploy".
+
+After deployment, Vercel will provide a live URL for your application.
