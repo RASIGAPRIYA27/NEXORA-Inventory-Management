@@ -53,6 +53,45 @@ The **Inventory Management System** is a comprehensive solution for tracking and
 
 ---
 
-## 🚀 Installation
+##▶️ Demo vedio 
 
-1. Clone the repository:
+Here 🔗 : https://drive.google.com/file/d/1aTWS0RMvFS3D3aeDII4ssVwQWce18a8n/view?usp=drivesdk
+
+##🚀 Installation & Setup
+
+1. Clone the Repository
+
+git clone https://github.com/yourusername/inventory-management-system.git
+cd inventory-management-system
+
+2. Install Dependencies
+
+Backend
+
+cd backend
+npm install
+
+Frontend
+
+cd ../frontend
+npm install
+
+3. Configure Environment Variables
+Create a .env file in both backend and frontend directories.
+
+Set up variables such as database URI and API endpoints as needed.
+
+4. Run the Application
+
+Start Backend
+
+cd backend
+npm run dev
+
+Start Frontend
+
+cd ../frontend
+npm start
+
+5. Access the Application
+Open your browser and navigate to: http://localhost:3000
