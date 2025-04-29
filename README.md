@@ -1,114 +1,134 @@
+
 # Inventory Management System
 
 ## 📖 Overview
+
 The **Inventory Management System** is a comprehensive solution for tracking and managing product stock, expenses, and user operations. This project includes CRUD functionality for products and features an intuitive dashboard to streamline inventory management processes. It is designed to enhance productivity and ensure efficient inventory control.
 
 ---
 
 ## ✨ Key Features
 
-### 1. **Dashboard**
-   - Provides an overview of key metrics such as total products, stock levels, and expenses.
-   - Visual representation of data through charts and graphs.
+- **Dashboard**
+  - Overview of key metrics: total products, stock levels, and expenses
+  - Visual representation of data through charts and graphs
 
-### 2. **Product Management (CRUD)**
-   - Add, edit, delete, and view product details.
-   - Track stock levels in real-time.
-   - Categorize products for easy organization.
+- **Product Management (CRUD)**
+  - Add, edit, delete, and view product details
+  - Real-time stock level tracking
+  - Categorize products for easy organization
 
-### 3. **Expenses Tracking**
-   - Record and monitor business expenses.
-   - Generate detailed expense reports.
+- **Expenses Tracking**
+  - Record and monitor business expenses
+  - Generate detailed expense reports
 
-### 4. **Inventory Management**
-   - View all inventory items with their stock levels.
-   - Update stock quantities as needed.
-   - Prevent overstocking or stock shortages.
+- **Inventory Management**
+  - View all inventory items with their stock levels
+  - Update stock quantities as needed
+  - Prevent overstocking or stock shortages
 
-### 5. **User Management**
-   - Manage user roles (e.g., Admin, Staff).
-   - Secure login system to ensure data integrity.
+- **User Management**
+  - Manage user roles (e.g., Admin, Staff)
+  - Secure login system to ensure data integrity
 
 ---
 
 ## 🛠️ Technologies Used
 
-| Component       | Technology                     |
-|------------------|--------------------------------|
-| **Frontend**     | React.ts                       |
-| **Backend**      | Node.js + Express.js          |
-| **Database**     | MongoDB                       |
-| **Styling**      | Tailwind CSS                 |
+| Component    | Technology           |
+|--------------|---------------------|
+| **Frontend** | React.ts            |
+| **Backend**  | Node.js + Express.js|
+| **Database** | MongoDB             |
+| **Styling**  | Tailwind CSS        |
 
 ---
 
 ## 📂 Database Schema
 
-| Table Name      | Description                                           |
-|------------------|-------------------------------------------------------|
-| `Users`         | Stores user information (id, name, role, password).   |
-| `Products`      | Tracks product details (id, name, category, stock).   |
-| `Expenses`      | Records business expenses (id, amount, description).  |
-| `Transactions`  | Logs sales and purchases with timestamps.             |
+| Table Name     | Description                                         |
+|----------------|-----------------------------------------------------|
+| `Users`        | Stores user information (id, name, role, password)  |
+| `Products`     | Tracks product details (id, name, category, stock)  |
+| `Expenses`     | Records business expenses (id, amount, description) |
+| `Transactions` | Logs sales and purchases with timestamps            |
 
 ---
 
-##▶️ Demo vedio 
+## ▶️ Demo Video
 
-Here 🔗 : https://drive.google.com/file/d/1aTWS0RMvFS3D3aeDII4ssVwQWce18a8n/view?usp=drivesdk
+[Watch Demo Video](https://drive.google.com/file/d/1aTWS0RMvFS3D3aeDII4ssVwQWce18a8n/view?usp=drivesdk)
 
-##🚀 Installation & Setup
+---
 
-1. Clone the Repository
+## 🚀 Installation & Setup
 
-'''git clone https://github.com/yourusername/inventory-management-system.git
+### 1. Clone the Repository
 
-cd inventory-management-system'''
+```bash
+git clone https://github.com/yourusername/inventory-management-system.git
+cd inventory-management-system
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
 
-Backend
-'''
+**Backend:**
+```bash
 cd backend
-npm install'''
+npm install
+```
 
-Frontend
-'''
+**Frontend:**
+```bash
 cd ../frontend
-npm install'''
+npm install
+```
 
-3. Configure Environment Variables
-Create a .env file in both backend and frontend directories.
+### 3. Configure Environment Variables
 
-Set up variables such as database URI and API endpoints as needed.
+- Create a `.env` file in both `backend` and `frontend` directories.
+- Set up variables such as database URI and API endpoints as needed.
 
-4. Run the Application
+### 4. Run the Application
 
-Start Backend
-'''
+**Start Backend:**
+```bash
 cd backend
-npm run dev'''
+npm run dev
+```
 
-Start Frontend
-'''
+**Start Frontend:**
+```bash
 cd ../frontend
-npm start'''
+npm start
+```
 
-5. Access the Application
-Open your browser and navigate to: http://localhost:3000
+### 5. Access the Application
 
-##Deployment
-You can easily deploy this project to platforms like Vercel, Netlify, or any cloud provider of your choice.
+Open your browser and navigate to: [http://localhost:3000](http://localhost:3000)
 
-Deploy to Vercel
-Sign up or log in at Vercel.
+---
 
-Click "New Project" and import your GitHub repository.
+## 🚀 Deployment
 
-Follow the prompts to configure your frontend (React) and backend (Node.js/Express) directories.
+You can easily deploy this project to platforms like **Vercel**, **Netlify**, or any cloud provider of your choice.
 
-Set required environment variables (e.g., MONGODB_URI, JWT_SECRET) in the Vercel dashboard.
+### Deploy to Vercel
 
-Click "Deploy".
+1. Sign up or log in at [Vercel](https://vercel.com/).
+2. Click **"New Project"** and import your GitHub repository.
+3. Follow the prompts to configure your frontend (React) and backend (Node.js/Express) directories.
+4. Set required environment variables (e.g., `MONGODB_URI`, `JWT_SECRET`) in the Vercel dashboard.
+5. Click **"Deploy"**.
+6. After deployment, Vercel will provide a live URL for your application.
 
-After deployment, Vercel will provide a live URL for your application.
+---
+
+> **Feel free to contribute, open issues, or suggest features!**
+
+---
+
+**Happy Inventory Managing!** 🚀
+
+---
+
