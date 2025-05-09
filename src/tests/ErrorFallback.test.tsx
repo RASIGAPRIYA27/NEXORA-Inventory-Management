@@ -4,6 +4,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ErrorFallback from '../components/ErrorFallback';
 
+// Make TypeScript happy by augmenting the Assertion interface
+import '@testing-library/jest-dom/extend-expect';
+
 describe('ErrorFallback', () => {
   it('renders error message', () => {
     const testError = new Error('Test error message');
