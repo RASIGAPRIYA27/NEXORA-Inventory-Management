@@ -12,6 +12,15 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 
+// Global error handler middleware
+app.use((err, req, res, next) => {
+  console.error('Global error handler caught:', err);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
+});
+
 // MongoDB Connection with detailed error handling
 mongoose.connect('mongodb://localhost:27017/inventory-manager', {
   useNewUrlParser: true,
@@ -24,24 +33,79 @@ mongoose.connect('mongodb://localhost:27017/inventory-manager', {
   console.error('Make sure MongoDB server is running and accessible');
 });
 
-// Define Schemas
+// Define Schemas with validation
 const ProductSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  image: { type: String, required: true },
-  category: { type: String, required: true },
-  price: { type: Number, required: true },
-  stock: { type: Number, required: true },
-  sku: { type: String, required: true },
+  name: { 
+    type: String, 
+    required: [true, 'Product name is required'],
+    trim: true
+  },
+  image: { 
+    type: String, 
+    required: [true, 'Product image URL is required']
+  },
+  category: { 
+    type: String, 
+    required: [true, 'Product category is required'],
+    trim: true
+  },
+  price: { 
+    type: Number, 
+    required: [true, 'Product price is required'],
+    min: [0, 'Price cannot be negative']
+  },
+  stock: { 
+    type: Number, 
+    required: [true, 'Stock quantity is required'],
+    min: [0, 'Stock cannot be negative']
+  },
+  sku: { 
+    type: String, 
+    required: [true, 'SKU is required'],
+    unique: true,
+    trim: true
+  },
   description: { type: String }
 });
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  role: { type: String, enum: ['Admin', 'Manager', 'Staff'], default: 'Staff' },
-  avatar: { type: String, required: true },
-  active: { type: Boolean, default: true },
-  phone: { type: String }
+  name: { 
+    type: String, 
+    required: [true, 'User name is required'],
+    trim: true
+  },
+  email: { 
+    type: String, 
+    required: [true, 'Email is required'], 
+    unique: true,
+    trim: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email address']
+  },
+  role: { 
+    type: String, 
+    enum: {
+      values: ['Admin', 'Manager', 'Staff'],
+      message: '{VALUE} is not a valid role'
+    },
+    default: 'Staff'
+  },
+  avatar: { 
+    type: String, 
+    required: [true, 'Avatar URL is required']
+  },
+  active: { 
+    type: Boolean, 
+    default: true 
+  },
+  phone: { 
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /\d{10,}/.test(v) || v === '';
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    }
+  }
 });
 
 // Create models - explicitly set collection names to match your existing collections
@@ -60,8 +124,8 @@ mongoose.connection.once('open', async () => {
   }
 });
 
-// Product routes
-app.get('/api/products', async (req, res) => {
+// Product routes with better error handling
+app.get('/api/products', async (req, res, next) => {
   try {
     console.log('Fetching products from database...');
     const products = await Product.find();
@@ -69,30 +133,43 @@ app.get('/api/products', async (req, res) => {
     res.json(products);
   } catch (err) {
     console.error('Error fetching products:', err);
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', async (req, res, next) => {
   try {
     console.log('Creating new product with data:', req.body);
+    // Validate required fields
+    const { name, category, price, stock, sku, image } = req.body;
+    if (!name || !category || price === undefined || stock === undefined || !sku || !image) {
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        requiredFields: ['name', 'category', 'price', 'stock', 'sku', 'image']
+      });
+    }
+    
     const product = new Product(req.body);
     const newProduct = await product.save();
     console.log('Product created successfully:', newProduct);
     res.status(201).json(newProduct);
   } catch (err) {
     console.error('Error creating product:', err);
-    res.status(400).json({ message: err.message });
+    if (err.code === 11000) {
+      // Handle duplicate key error (e.g., duplicate SKU)
+      return res.status(409).json({ message: 'Product with this SKU already exists' });
+    }
+    next(err);
   }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', async (req, res, next) => {
   try {
     console.log(`Updating product with ID: ${req.params.id}`, req.body);
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id, 
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
@@ -101,11 +178,14 @@ app.put('/api/products/:id', async (req, res) => {
     res.json(updatedProduct);
   } catch (err) {
     console.error('Error updating product:', err);
-    res.status(400).json({ message: err.message });
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Product with this SKU already exists' });
+    }
+    next(err);
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', async (req, res, next) => {
   try {
     console.log(`Deleting product with ID: ${req.params.id}`);
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -116,12 +196,12 @@ app.delete('/api/products/:id', async (req, res) => {
     res.json({ message: 'Product deleted', id: req.params.id });
   } catch (err) {
     console.error('Error deleting product:', err);
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
-// User routes
-app.get('/api/users', async (req, res) => {
+// User routes with better error handling
+app.get('/api/users', async (req, res, next) => {
   try {
     console.log('Fetching users from database...');
     const users = await User.find();
@@ -129,13 +209,22 @@ app.get('/api/users', async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error('Error fetching users:', err);
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
-app.post('/api/users', async (req, res) => {
+app.post('/api/users', async (req, res, next) => {
   try {
     console.log('Creating new user with data:', req.body);
+    // Validate required fields
+    const { name, email, avatar } = req.body;
+    if (!name || !email || !avatar) {
+      return res.status(400).json({
+        message: 'Missing required fields',
+        requiredFields: ['name', 'email', 'avatar']
+      });
+    }
+    
     const user = new User(req.body);
     const newUser = await user.save();
     console.log('User created successfully:', newUser);
@@ -144,19 +233,19 @@ app.post('/api/users', async (req, res) => {
     console.error("Error saving user:", err);
     if (err.code === 11000) {
       // Handle duplicate email error
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(409).json({ message: 'Email already exists' });
     }
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 });
 
-app.put('/api/users/:id', async (req, res) => {
+app.put('/api/users/:id', async (req, res, next) => {
   try {
     console.log(`Updating user with ID: ${req.params.id}`, req.body);
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id, 
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -165,11 +254,14 @@ app.put('/api/users/:id', async (req, res) => {
     res.json(updatedUser);
   } catch (err) {
     console.error('Error updating user:', err);
-    res.status(400).json({ message: err.message });
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Email already exists' });
+    }
+    next(err);
   }
 });
 
-app.delete('/api/users/:id', async (req, res) => {
+app.delete('/api/users/:id', async (req, res, next) => {
   try {
     console.log(`Deleting user with ID: ${req.params.id}`);
     const deletedUser = await User.findByIdAndDelete(req.params.id);
@@ -180,7 +272,7 @@ app.delete('/api/users/:id', async (req, res) => {
     res.json({ message: 'User deleted', id: req.params.id });
   } catch (err) {
     console.error('Error deleting user:', err);
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

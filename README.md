@@ -109,6 +109,32 @@ Open your browser and navigate to: [http://localhost:3000](http://localhost:3000
 
 ---
 
+## 🧪 Testing
+
+The project includes several test cases to ensure reliability and functionality:
+
+### Running Tests
+
+```bash
+npm test
+```
+
+### Test Coverage
+
+The test suite covers:
+- Component rendering and behavior
+- API service functionality
+- Error handling scenarios
+- Form validation
+
+### Best Practices
+
+- Each component has associated unit tests
+- Critical paths are covered by integration tests
+- Error boundaries are tested for proper fallback behavior
+
+---
+
 ## 🚀 Deployment
 
 You can easily deploy this project to platforms like **Vercel**, **Netlify**, or any cloud provider of your choice.
@@ -124,6 +150,42 @@ You can easily deploy this project to platforms like **Vercel**, **Netlify**, or
 
 ---
 
+## 🔮 Future Scope
+
+### Planned Enhancements
+
+1. **Analytics Dashboard**
+   - Advanced sales forecasting based on historical data
+   - Inventory turnover ratio analysis
+   - Custom reporting with exportable formats (PDF, CSV, Excel)
+
+2. **Mobile Application**
+   - Native mobile apps for iOS and Android
+   - Barcode/QR code scanning for quick inventory updates
+   - Offline functionality with sync capabilities
+
+3. **Advanced User Management**
+   - Role-based permissions system with granular access controls
+   - Two-factor authentication for enhanced security
+   - User activity logs and audit trails
+
+4. **Integration Capabilities**
+   - E-commerce platform integrations (Shopify, WooCommerce)
+   - Accounting software connections (QuickBooks, Xero)
+   - Payment gateway integrations
+
+5. **Supply Chain Management**
+   - Vendor management and performance tracking
+   - Purchase order automation
+   - Delivery tracking and notifications
+
+6. **AI-Powered Features**
+   - Automated stock level predictions and reordering
+   - Anomaly detection for inventory discrepancies
+   - Product demand forecasting
+
+---
+
 > **Feel free to contribute, open issues, or suggest features!**
 
 ---
@@ -131,4 +193,3 @@ You can easily deploy this project to platforms like **Vercel**, **Netlify**, or
 **Happy Inventory Managing!** 🚀
 
 ---
-
