@@ -1,19 +1,20 @@
 
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import { fetchUsers, createUser, updateUser, deleteUser } from '../services/userService';
 
 // Mock axios
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
+const mockedAxios = axios as unknown as { [key: string]: any };
 
 // Mock the api module
-jest.mock('../services/api', () => ({
+vi.mock('../services/api', () => ({
   __esModule: true,
   default: {
-    get: jest.fn().mockImplementation(() => Promise.resolve({ data: [] })),
-    post: jest.fn().mockImplementation(() => Promise.resolve({ data: {} })),
-    put: jest.fn().mockImplementation(() => Promise.resolve({ data: {} })),
-    delete: jest.fn().mockImplementation(() => Promise.resolve({ data: {} })),
+    get: vi.fn().mockImplementation(() => Promise.resolve({ data: [] })),
+    post: vi.fn().mockImplementation(() => Promise.resolve({ data: {} })),
+    put: vi.fn().mockImplementation(() => Promise.resolve({ data: {} })),
+    delete: vi.fn().mockImplementation(() => Promise.resolve({ data: {} })),
   }
 }));
 
@@ -22,7 +23,7 @@ import api from '../services/api';
 
 describe('userService', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('fetchUsers', () => {
@@ -31,7 +32,7 @@ describe('userService', () => {
         { id: 1, name: 'User 1', email: 'user1@example.com', role: 'Admin', avatar: '', active: true }
       ];
       
-      (api.get as jest.Mock).mockResolvedValueOnce({ data: mockUsers });
+      (api.get as any).mockResolvedValueOnce({ data: mockUsers });
       
       const result = await fetchUsers();
       
@@ -41,7 +42,7 @@ describe('userService', () => {
 
     it('should throw an error when the request fails', async () => {
       const errorMessage = 'Network Error';
-      (api.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
+      (api.get as any).mockRejectedValueOnce(new Error(errorMessage));
       
       await expect(fetchUsers()).rejects.toThrow(errorMessage);
     });
@@ -58,7 +59,7 @@ describe('userService', () => {
       };
       
       const mockResponse = { ...newUser, id: 1 };
-      (api.post as jest.Mock).mockResolvedValueOnce({ data: mockResponse });
+      (api.post as any).mockResolvedValueOnce({ data: mockResponse });
       
       const result = await createUser(newUser);
       

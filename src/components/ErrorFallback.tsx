@@ -16,7 +16,10 @@ const ErrorFallback = ({
   showReset = true 
 }: ErrorFallbackProps) => {
   useEffect(() => {
-    console.error('Error caught by ErrorFallback:', error);
+    // Only log the error in non-test environments
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('Error caught by ErrorFallback:', error);
+    }
   }, [error]);
 
   return (

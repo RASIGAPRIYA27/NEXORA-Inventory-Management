@@ -1,4 +1,5 @@
 
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ErrorFallback from '../components/ErrorFallback';
@@ -13,7 +14,7 @@ describe('ErrorFallback', () => {
   });
 
   it('calls resetErrorBoundary when button is clicked', async () => {
-    const resetMock = jest.fn();
+    const resetMock = vi.fn();
     const testError = new Error('Test error message');
     
     render(<ErrorFallback error={testError} resetErrorBoundary={resetMock} />);
@@ -25,7 +26,7 @@ describe('ErrorFallback', () => {
   });
 
   it('does not show reset button when showReset is false', () => {
-    const resetMock = jest.fn();
+    const resetMock = vi.fn();
     const testError = new Error('Test error message');
     
     render(<ErrorFallback 
